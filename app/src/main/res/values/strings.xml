@@ -2,4 +2,5 @@
     <string name="app_name">ThandiBus</string>
     <string name="resume">Resume</string>
     <string name="pause">Pause</string>
+    <string name="title_activity_mapa_test">Mapa</string>
 </resources>

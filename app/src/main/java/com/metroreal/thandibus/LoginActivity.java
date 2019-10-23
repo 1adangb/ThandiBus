@@ -125,6 +125,6 @@ public class LoginActivity extends AppCompatActivity {
     }
     public void aGPS(View v)
     {
-        startActivity(new Intent(LoginActivity.this,GpsActivity.class));
+        startActivity(new Intent(LoginActivity.this,MapaTestActivity.class));
     }
 }
