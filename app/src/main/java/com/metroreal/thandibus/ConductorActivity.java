@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class ConductorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conductor);
+
 
         fAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseFirestore.getInstance();
@@ -110,7 +112,7 @@ public class ConductorActivity extends AppCompatActivity {
                 });
         dialog.show();
     }
-    private boolean checkUbiacacion() {
+    private boolean checkUbicacion() {
         if (!isUbicacionActivada())
             mostrarAlert();
         return isUbicacionActivada();
@@ -121,7 +123,7 @@ public class ConductorActivity extends AppCompatActivity {
 
     public void statusGPS(View v) {
 
-        if (!checkUbiacacion())
+        if (!checkUbicacion())
             return;
         Button button = (Button) v;
         if (button.getText().equals("Terminar")) {
