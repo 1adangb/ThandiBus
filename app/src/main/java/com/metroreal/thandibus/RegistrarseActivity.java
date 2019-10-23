@@ -18,7 +18,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,6 +104,10 @@ public class RegistrarseActivity extends AppCompatActivity
                     map.put("tipo", tipo);
                     map.put("latitud","0");
                     map.put("longitud","0");
+                    //GeoPoint geo;
+                    //geo = new GeoPoint(1,1);
+                    //map.put("osiosi",geo);
+                    //map.put("timestamp", FieldValue.serverTimestamp());
                     String id = fAuth.getUid();
                     fDatabase.collection("usuarios").document(id).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
