@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         else if (tipo.equals("conductor"))
                         {
-                            Intent intent = new Intent(LoginActivity.this, ConductorActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, RutasCActivity.class);
                             startActivity(intent);
                             finish();
                         }
