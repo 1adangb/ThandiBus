@@ -37,7 +37,8 @@ public class ConductorActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private FirebaseFirestore fDatabase;
     private TextView txInfo;
- 
+
+
     LocationManager locationManager;
     double latitud;
     double longitud;
@@ -120,7 +121,7 @@ public class ConductorActivity extends AppCompatActivity {
     private boolean isUbicacionActivada() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
-
+    //onclick del boton IniciarTerminar
     public void statusGPS(View v) {
 
         if (!checkUbicacion())
