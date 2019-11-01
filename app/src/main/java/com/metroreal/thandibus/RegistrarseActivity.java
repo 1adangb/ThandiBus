@@ -104,12 +104,9 @@ public class RegistrarseActivity extends AppCompatActivity
                     map.put("tipo", tipo);
                     map.put("latitud","0");
                     map.put("longitud","0");
-                    //GeoPoint geo;
-                    //geo = new GeoPoint(1,1);
-                    //map.put("osiosi",geo);
-                    //map.put("timestamp", FieldValue.serverTimestamp());
-                    String id = fAuth.getUid();
-                    fDatabase.collection("usuarios").document(id).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    map.put("timestamp", FieldValue.serverTimestamp());
+                    String idUsuario = fAuth.getUid();
+                    fDatabase.collection("usuarios").document(idUsuario).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task2) {
                             if (task2.isSuccessful())
