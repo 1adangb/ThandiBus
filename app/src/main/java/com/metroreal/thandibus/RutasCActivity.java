@@ -52,15 +52,15 @@ public class RutasCActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful())
                 {
-                    ArrayList<Map<String,Object>> listaRutas = new ArrayList<>();
+                    ArrayList<QueryDocumentSnapshot> listaRutas = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult())
                     {
 
-                        listaRutas.add(document.getData());
+                        listaRutas.add(document);
                     }
                     if (listaRutas != null)
                     {
-                        ArrayAdapter adapter = new ArrayAdapter(RutasCActivity.this,R.layout.support_simple_spinner_dropdown_item,listaRutas);
+                        RutasAdapter adapter = new RutasAdapter(RutasCActivity.this,0,listaRutas);
                         lsRutas.setAdapter(adapter);
                     }
                     else 

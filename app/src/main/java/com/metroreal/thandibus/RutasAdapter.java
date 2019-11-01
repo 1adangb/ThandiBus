@@ -1,30 +1,44 @@
 package com.metroreal.thandibus;
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
-public class RutasAdapter extends BaseAdapter {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class RutasAdapter extends ArrayAdapter<QueryDocumentSnapshot>
+{
+    private Context mContext;
+    private List<QueryDocumentSnapshot> listaRutas = new ArrayList<>();
 
 
-
-    @Override
-    public int getCount() {
-        return 0;
+    public RutasAdapter(@NonNull Context context, int resource, @NonNull List<QueryDocumentSnapshot> objects) {
+        super(context, resource, objects);
+        mContext = context;
+        listaRutas = objects;
     }
 
+    @NonNull
     @Override
-    public Object getItem(int position) {
-        return null;
-    }
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        View listItem = convertView;
+        if(listItem == null)
+            listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item,parent,false);
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
+        QueryDocumentSnapshot estaRuta = listaRutas.get(position);
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+        TextView name = (TextView) listItem.findViewById(R.id.txtNombreRuta);
+        name.setText(estaRuta.getString("nombreRuta"));
+
+        return listItem;
     }
 }
