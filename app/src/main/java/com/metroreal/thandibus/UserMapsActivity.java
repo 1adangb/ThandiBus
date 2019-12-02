@@ -2,8 +2,10 @@ package com.metroreal.thandibus;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -14,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -29,6 +32,7 @@ import javax.annotation.Nullable;
 public class UserMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private FirebaseFirestore fDatabase;
+    private FirebaseAuth fAuth;
     private GoogleMap mMap;
     private LatLng coordenadas;
     private double lat = 20.6529098;
@@ -46,6 +50,7 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
         mapFragment.getMapAsync(this);
         coordenadas = new LatLng(20.6481054,-100.4132848);
         fDatabase = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
     }
     /**
      * Manipulates the map once available.
@@ -60,10 +65,22 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
+        mMap.setMaxZoomPreference(20);
+        mMap.setMinZoomPreference(12);
         mMap.setMyLocationEnabled(true);
-        cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+        cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordenadas,12);
         mMap.animateCamera(cameraUpdate);
-        //mMap.addMarker(new MarkerOptions().position(coordenadas).title("Marker in Sydney"));
+        final String[] a = {""};
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener()
+        {
+            @Override
+            public void onCameraMove()
+            {
+                a[0] = String.valueOf(mMap.getCameraPosition().zoom);
+               Log.w("zoom",a[0]);
+            }
+        });
+
         cambiarUbicacion();
     }
     private void cambiarUbicacion ()
@@ -89,5 +106,12 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
                 }
             }
         });
+    }
+    public void onClkSalir(View v)
+    {
+        fAuth.signOut();
+        Intent intent = new Intent(UserMapsActivity.this,LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
