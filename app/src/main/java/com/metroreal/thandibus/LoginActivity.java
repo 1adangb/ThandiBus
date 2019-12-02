@@ -45,9 +45,9 @@ public class LoginActivity extends AppCompatActivity
         btAcceder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btAcceder.setEnabled(false);
                 correo = edCorreo.getText().toString();
                 contraseña = edContraseña.getText().toString();
-
                 if (!correo.isEmpty() && !contraseña.isEmpty())
                 {
                     loginUser();
@@ -55,11 +55,12 @@ public class LoginActivity extends AppCompatActivity
                 else
                 {
                     Toast.makeText(LoginActivity.this, "Llene todos los campos", Toast.LENGTH_SHORT).show();
+                    btAcceder.setEnabled(true);
                 }
             }
         });
 
-        edCorreo.setText("adan.no.adan@gmail.com");
+        edCorreo.setText("adan.no.adan@outlook.com");
         edContraseña.setText("123456");
     }
 
@@ -77,6 +78,7 @@ public class LoginActivity extends AppCompatActivity
                 else
                 {
                     Toast.makeText(LoginActivity.this, "No se pudo inicar sesion, compruebe sus datos", Toast.LENGTH_SHORT).show();
+                    btAcceder.setEnabled(true);
                 }
             }
         });
@@ -97,7 +99,7 @@ public class LoginActivity extends AppCompatActivity
                         tipo = document.getString("tipo");
                         if (tipo.equals("pasajero"))
                         {
-                            Intent intent = new Intent(LoginActivity.this, UserMapsActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, RutasPActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -110,6 +112,7 @@ public class LoginActivity extends AppCompatActivity
                         else
                         {
                             Toast.makeText(LoginActivity.this, "Error enviando a intent personalizado", Toast.LENGTH_SHORT).show();
+                            btAcceder.setEnabled(true);
                         }
                     }
                     else
@@ -120,6 +123,7 @@ public class LoginActivity extends AppCompatActivity
                 else
                 {
                     Toast.makeText(LoginActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                    btAcceder.setEnabled(true);
                 }
             }
         });
