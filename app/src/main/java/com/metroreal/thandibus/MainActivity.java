@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
                             }
                             else if (tipo.equals("pasajero"))
                             {
-                                startActivity(new Intent(MainActivity.this,UserMapsActivity.class));
+                                startActivity(new Intent(MainActivity.this,RutasPActivity.class));
                                 finish();
                             }
                         } else {
