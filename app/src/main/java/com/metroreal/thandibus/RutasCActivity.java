@@ -29,20 +29,14 @@ public class RutasCActivity extends AppCompatActivity {
     FirebaseFirestore fDatabase;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rutas_c);
 
         lsRutas = (ListView) findViewById(R.id.lstRutas);
         fDatabase = FirebaseFirestore.getInstance();
         llenarListaRutas();
-
-        lsRutas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
     }
 
     private void llenarListaRutas()

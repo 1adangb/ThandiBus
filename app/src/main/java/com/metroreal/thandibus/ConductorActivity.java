@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,45 +25,66 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConductorActivity extends AppCompatActivity {
+public class ConductorActivity extends AppCompatActivity
+{
 
     private Button btLogout;
+    private Button btStatusViaje;
     private FirebaseAuth fAuth;
     private FirebaseFirestore fDatabase;
     private TextView txInfo;
-
-
+    private TextView txRuta;
     LocationManager locationManager;
     double latitud;
     double longitud;
+    boolean viajando = false;
     String idUsuario;
+    String idRuta;
+    String idViaje = "304831595";
     TextView txLatitud;
     TextView txLongitud;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conductor);
 
-
         fAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseFirestore.getInstance();
+        btStatusViaje = (Button) findViewById(R.id.btnStatus);
         btLogout = (Button) findViewById(R.id.btnLogout);
         txInfo = (TextView) findViewById(R.id.txtInfo);
-        btLogout.setOnClickListener(new View.OnClickListener() {
+        txRuta = (TextView) findViewById(R.id.txtRuta);
+        Intent esteIntent = getIntent();
+        idRuta = esteIntent.getStringExtra("idRuta");
+        txRuta.setText(idRuta);
+        txRuta.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        btLogout.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("latitud", "0");
                 map.put("longitud","0");
-
                 fDatabase.collection("usuarios")
                         .document(fAuth.getCurrentUser().getUid())
                         .update(map)
@@ -82,15 +104,14 @@ public class ConductorActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
         });
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         txLatitud = (TextView) findViewById(R.id.txtLatitud);
         txLongitud = (TextView) findViewById(R.id.txtLongitud);
         idUsuario = fAuth.getCurrentUser().getUid();
-
         mostrarInfo();
+
     }
 
     private void mostrarAlert()
@@ -113,48 +134,31 @@ public class ConductorActivity extends AppCompatActivity {
                 });
         dialog.show();
     }
-    private boolean checkUbicacion() {
+    private boolean checkUbicacion()
+    {
         if (!isUbicacionActivada())
             mostrarAlert();
         return isUbicacionActivada();
     }
-    private boolean isUbicacionActivada() {
+    private boolean isUbicacionActivada()
+    {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
-    //onclick del boton IniciarTerminar
-    public void statusGPS(View v) {
 
-        if (!checkUbicacion())
-            return;
-        Button button = (Button) v;
-        if (button.getText().equals("Terminar")) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            }
-            locationManager.removeUpdates(location);
-            button.setText("Iniciar");
-        }
-        else {
-            locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 1000*10, 5, location);
-            Toast.makeText(this, "Ubicacion GPS Iniciado", Toast.LENGTH_LONG).show();
-            button.setText("Terminar");
-        }
-    }
-
-    private final LocationListener location = new LocationListener() {
+    private final LocationListener location = new LocationListener()
+    {
         public void onLocationChanged(Location location) {
             latitud = location.getLatitude();
             longitud = location.getLongitude();
             runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
+                public void run()
+                {
                     txLatitud.setText(latitud + "");
                     txLongitud.setText(longitud + "");
                     Toast.makeText(ConductorActivity.this, "GPS Actualizado", Toast.LENGTH_SHORT).show();
                     Log.w("GPS conductor", "GPS actualizado" );
                     enviarGPS();
-                    
-                    
                 }
             });
         }
@@ -169,7 +173,6 @@ public class ConductorActivity extends AppCompatActivity {
         public void onProviderDisabled(String s) {
         }
     };
-
     private void mostrarInfo()
     {
         String idUsuario = fAuth.getCurrentUser().getUid();
@@ -197,23 +200,151 @@ public class ConductorActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onClkViaje(View v)
+    {
+        if (!viajando)
+        {
+            if (!checkUbicacion())
+            {
+                return;
+            }
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                Toast.makeText(this, "No hay permisos", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                iniciarViaje();
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1 * (1 * 1000), 1, location);
+                Toast.makeText(this, "Ubicacion GPS Iniciado", Toast.LENGTH_LONG).show();
+                btStatusViaje.setText("Terminar");
+            }
+        }
+        else
+        {
+            preTerminarViaje();
+            locationManager.removeUpdates(location);
+            btStatusViaje.setText("Iniciar");
+        }
+    }
+
+    private void preTerminarViaje()
+    {
+
+        CollectionReference colRef = fDatabase.collection("viaje").document(idRuta).collection(idUsuario);
+        colRef.whereEqualTo("viajando",true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful())
+                {
+                    Log.w("preTerminarViaje","taskSuccesfull");
+                    for (QueryDocumentSnapshot document : task.getResult())
+                    {
+                        idViaje = document.getId();
+                        Log.w("DocRef",idViaje);
+                    }
+                    viajando = false;
+                    terminarViaje(idViaje);
+
+                }
+                else
+                {
+                    Log.w("Buscando ruta activa", "no encontro");
+                }
+            }
+        });
+    }
+     public void obtenerViajeActivo()
+     {
+         CollectionReference colRef = fDatabase.collection("viaje").document(idRuta).collection(idUsuario);
+         colRef.whereEqualTo("viajando",true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+             @Override
+             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                 if (task.isSuccessful())
+                 {
+                     if (!task.getResult().isEmpty())
+                     {
+                         for (QueryDocumentSnapshot document : task.getResult())
+                         {
+                             idViaje = document.getId();
+                         }
+                     }
+                     else
+                     {
+                         Log.i("obtenerViajeActivo","No hay viaje Activo");
+                     }
+                 }
+                 else
+                 {
+                     Toast.makeText(ConductorActivity.this, "Error al conectar al servidor", Toast.LENGTH_SHORT).show();
+                 }
+             }
+         });
+     }
+    public void terminarViaje(String idViaje)
+    {
+        DocumentReference docRef = fDatabase.collection("viaje").document(idRuta).collection(idUsuario).document(idViaje);
+        Map<String, Object> map = new HashMap<>();
+        map.put("viajando", viajando);
+        map.put("finViaje", FieldValue.serverTimestamp());
+        docRef.update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful())
+                {
+                    Toast.makeText(ConductorActivity.this, "Viaje Terminado", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(ConductorActivity.this, "Error al terminar viaje", Toast.LENGTH_SHORT).show();
+                    viajando = true;
+                }
+            }
+        });
+    }
+
+    public void iniciarViaje()
+    {
+        viajando = true;
+        Map<String, Object> map = new HashMap<>();
+        map.put("usuario",idUsuario);
+        map.put("ubicacion",new GeoPoint(0,0));
+        map.put("viajando",viajando);
+        map.put("inicioViaje", FieldValue.serverTimestamp());
+        fDatabase.collection("viaje").document(idRuta).collection(idUsuario).document("304831595").set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful())
+                {
+                    Toast.makeText(ConductorActivity.this, "viaje iniciado", Toast.LENGTH_SHORT).show();
+                    //obtenerViajeActivo();
+                }
+                else    
+                {
+                    Toast.makeText(ConductorActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     public void enviarGPS()
     {
+
         Map<String, Object> map = new HashMap<>();
-        map.put("latitud", String.valueOf(latitud));
-        map.put("longitud",String.valueOf(longitud));
-        
-        fDatabase.collection("usuarios").document(idUsuario).update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+        map.put("ubicacion", new GeoPoint(latitud,longitud));
+        Log.w("DocRef",idRuta + " " + idUsuario + " " + idViaje);
+        DocumentReference docRef = fDatabase.collection("viaje").document(idRuta).collection(idUsuario).document(idViaje);
+        docRef.update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task2) {
                 if (task2.isSuccessful())
                 {
-
                     Toast.makeText(ConductorActivity.this, "Datos enviados a Firestore", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    Toast.makeText(ConductorActivity.this, "No se crearon los datos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConductorActivity.this, "No se actualizaron los datos", Toast.LENGTH_SHORT).show();
                 }
             }
         });

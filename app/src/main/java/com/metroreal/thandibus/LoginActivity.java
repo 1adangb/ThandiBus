@@ -18,7 +18,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity
+{
     private EditText edCorreo;
     private EditText edContraseña;
     private Button btAcceder;
@@ -30,7 +31,8 @@ public class LoginActivity extends AppCompatActivity {
     private String contraseña = "";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         fDatabase = FirebaseFirestore.getInstance();
@@ -56,6 +58,9 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        edCorreo.setText("adan.no.adan@gmail.com");
+        edContraseña.setText("123456");
     }
 
 
@@ -92,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                         tipo = document.getString("tipo");
                         if (tipo.equals("pasajero"))
                         {
-                            Intent intent = new Intent(LoginActivity.this, PasajeroActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, UserMapsActivity.class);
                             startActivity(intent);
                             finish();
                         }

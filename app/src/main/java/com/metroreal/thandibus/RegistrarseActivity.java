@@ -74,7 +74,6 @@ public class RegistrarseActivity extends AppCompatActivity
                     {
                         Toast.makeText(RegistrarseActivity.this, "El password debe contener mas de 6 carateres", Toast.LENGTH_SHORT).show();
                     }
-
                 }
                 else
                 {
@@ -108,10 +107,10 @@ public class RegistrarseActivity extends AppCompatActivity
                     String idUsuario = fAuth.getUid();
                     fDatabase.collection("usuarios").document(idUsuario).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task2) {
+                        public void onComplete(@NonNull Task<Void> task2)
+                        {
                             if (task2.isSuccessful())
                             {
-
                                 if (tipo.equals("conductor"))
                                 {
                                     Intent intent = new Intent(RegistrarseActivity.this,ConductorActivity.class);
@@ -141,9 +140,7 @@ public class RegistrarseActivity extends AppCompatActivity
                 {
                     Toast.makeText(RegistrarseActivity.this, "Error al registrar", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
-
     }
 }
