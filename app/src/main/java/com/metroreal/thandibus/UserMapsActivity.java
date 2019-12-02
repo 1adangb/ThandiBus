@@ -12,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -67,20 +68,19 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
     }
     private void cambiarUbicacion ()
     {
-        Log.w("cambiarUbicacion","Entro");
+        MarkerOptions a = new MarkerOptions()
+                .position(coordenadas);
+        final Marker m = mMap.addMarker(a);
         DocumentReference docRef = fDatabase.collection("viaje").document("waRkjE2ZT4usjs2OO2tI").collection("TPWZaUXozVfVQ771a5CVf5ZPat42").document("304831595");
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null)
                 {
-                    GeoPoint data = (GeoPoint) documentSnapshot.get("ubicacion");
-                    coordenadas = new LatLng(data.getLatitude(),data.getLongitude());
-                    String latitLongi = coordenadas.toString();
-                    Log.w("COORD", latitLongi);
-                    Toast.makeText(UserMapsActivity.this, latitLongi, Toast.LENGTH_SHORT).show();
-                    mMap.addMarker(new MarkerOptions().position(coordenadas));
-                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordenadas,17);
+                    GeoPoint geo = (GeoPoint) documentSnapshot.get("ubicacion");
+                    coordenadas = new LatLng(geo.getLatitude(),geo.getLongitude());
+                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordenadas,mMap.getCameraPosition().zoom);
+                    m.setPosition(coordenadas);
                     mMap.animateCamera(cameraUpdate);
                 }
                 else
