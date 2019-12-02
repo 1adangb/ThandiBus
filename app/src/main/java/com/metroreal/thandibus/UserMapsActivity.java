@@ -38,6 +38,7 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
     private double lat = 20.6529098;
     private  double lon = -100.4064888;
     private CameraUpdate cameraUpdate;
+    private String idRuta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,6 +52,8 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
         coordenadas = new LatLng(20.6481054,-100.4132848);
         fDatabase = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
+        idRuta = getIntent().getStringExtra("idRuta");
+
     }
     /**
      * Manipulates the map once available.
@@ -99,6 +102,7 @@ public class UserMapsActivity extends FragmentActivity implements OnMapReadyCall
                     cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordenadas,mMap.getCameraPosition().zoom);
                     m.setPosition(coordenadas);
                     mMap.animateCamera(cameraUpdate);
+                    Toast.makeText(UserMapsActivity.this, idRuta, Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
