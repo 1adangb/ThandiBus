@@ -17,13 +17,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RutasAdapter extends ArrayAdapter<QueryDocumentSnapshot>
+public class RutasCAdapter extends ArrayAdapter<QueryDocumentSnapshot>
 {
     private Context mContext;
     private List<QueryDocumentSnapshot> listaRutas = new ArrayList<>();
 
 
-    public RutasAdapter(@NonNull Context context, int resource, @NonNull List<QueryDocumentSnapshot> objects)
+    public RutasCAdapter(@NonNull Context context, int resource, @NonNull List<QueryDocumentSnapshot> objects)
     {
         super(context, resource, objects);
         mContext = context;

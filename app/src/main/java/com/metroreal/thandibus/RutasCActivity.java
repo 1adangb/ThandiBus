@@ -4,24 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.ArrayMap;
-import android.util.Log;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class RutasCActivity extends AppCompatActivity {
 
@@ -54,7 +46,7 @@ public class RutasCActivity extends AppCompatActivity {
                     }
                     if (listaRutas != null)
                     {
-                        RutasAdapter adapter = new RutasAdapter(RutasCActivity.this,0,listaRutas);
+                        RutasCAdapter adapter = new RutasCAdapter(RutasCActivity.this,0,listaRutas);
                         lsRutas.setAdapter(adapter);
                     }
                     else 
